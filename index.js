@@ -1,6 +1,22 @@
+/**
+ * @providesModule RNSimpleShare
+ */
+'use strict';
 
-import { NativeModules } from 'react-native';
+var React = require('react-native');
+var {
+  NativeModules
+} = React;
 
-const { RNSimpleShare } = NativeModules;
 
-export default RNSimpleShare;
+var SimpleShare = NativeModules.RNSimpleShare;
+
+/**
+ * High-level docs for the RNSimpleShare iOS API can be written here.
+ */
+
+var RNSimpleShare = {
+  show: SimpleShare.show
+};
+
+module.exports = RNSimpleShare;
