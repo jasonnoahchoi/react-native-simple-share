@@ -19,6 +19,19 @@
 3. In XCode, in the project navigator, select your project. Add `libRNSimpleShare.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`)<
 
+#### Cocoapods
+
+1. Add the RNSimpleShare plugin dependency to your `Podfile`, pointing at the path where NPM installed it
+
+    ```ruby
+    pod 'RNSimpleShare', :path => '../node_modules/react-native-simple-share'
+    ```
+
+2. Run `pod install`
+
+*NOTE: The RNSimpleShare `.podspec` depends on the `React` pod, and so in order to ensure that it can correctly use the version of React Native that your app is built with, please make sure to define the `React` dependency in your app's `Podfile` as explained [here](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html#podfile).*
+
+
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
@@ -42,12 +55,28 @@
   - Add `using Com.Reactlibrary.RNSimpleShare;` to the usings at the top of the file
   - Add `new RNSimpleSharePackage()` to the `List<IReactPackage>` returned by the `Packages` method
 
-
 ## Usage
 ```javascript
 import RNSimpleShare from 'react-native-simple-share';
-
-// TODO: What to do with the module?
-RNSimpleShare;
 ```
-  # react-native-simple-share
+
+##### Use RNSimpleShare simply by calling:
+
+    RNSimpleShare.showWithOptions({
+      text: "Text you want to share",
+      url: "URL you want to share",
+      imageUrl: "Url of the image you want to share/action",
+      imageBase64: "Raw base64 encoded image data"
+      image: "Name of the image in the app bundle",
+      file: "Path to file you want to share",
+      anchor: React.findNodeHandle(this.refs.share), // Where you want the share popup to point to on iPad
+    });
+
+##### Note:
+- Only provide one image type to the options argument. If multiple image types are provided, image will be used.
+- anchor is optional and only applicable for iPad. Popup will be centered by default if anchor is not provided.
+
+
+## License
+
+MIT
