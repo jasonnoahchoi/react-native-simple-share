@@ -1,0 +1,43 @@
+
+{
+  "name": "react-native-simple-share",
+  "version": "1.0.0",
+  "description": "Simple iOS share UIActivityViewController for React Native",
+  "main": "SimpleShare",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jasonnoahchoi/react-native-simple-share.git"
+  },
+  "keywords": [
+    "react-native",
+    "react",
+    "native",
+    "uiactivityviewcontroller"
+    "activity-view-controller",
+    "react-component",
+    "react-native-component",
+    "action-sheet",
+    "share-sheet",
+    "share",
+    "sheet",
+    "facebook",
+    "twitter",
+    "pinterest",
+    "airdrop",
+    "mail",
+    "social",
+    "message"
+  ],
+  "author": "Jason Noah Choi <jasonnoahchoi@gmail.com> (https://github.com/jasonnoahchoi)",
+  "license": "MIT",
+  "homepage": "https://github.com/jasonnoahchoi/react-native-simple-share",
+  "peerDependencies": {
+    "react-native": "^0.41.2",
+    "react-native-windows": "0.41.0-rc.1"
+
+  }
+}
