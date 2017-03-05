@@ -16,7 +16,7 @@ var SimpleShare = NativeModules.RNSimpleShare;
  */
 
 var RNSimpleShare = {
-  show: SimpleShare.show
+  share: SimpleShare.share
 };
 
 module.exports = RNSimpleShare;
