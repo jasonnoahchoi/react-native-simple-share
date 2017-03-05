@@ -31,52 +31,74 @@
 
 *NOTE: The RNSimpleShare `.podspec` depends on the `React` pod, and so in order to ensure that it can correctly use the version of React Native that your app is built with, please make sure to define the `React` dependency in your app's `Podfile` as explained [here](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html#podfile).*
 
-
-#### Android
-
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNSimpleSharePackage;` to the imports at the top of the file
-  - Add `new RNSimpleSharePackage()` to the list returned by the `getPackages()` method
-2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-simple-share'
-  	project(':react-native-simple-share').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-simple-share/android')
-  	```
-3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-simple-share')
-  	```
-
-#### Windows
-[Read it! :D](https://github.com/ReactWindows/react-native)
-
-1. In Visual Studio add the `RNSimpleShare.sln` in `node_modules/react-native-simple-share/windows/RNSimpleShare.sln` folder to their solution, reference from their app.
-2. Open up your `MainPage.cs` app
-  - Add `using Com.Reactlibrary.RNSimpleShare;` to the usings at the top of the file
-  - Add `new RNSimpleSharePackage()` to the `List<IReactPackage>` returned by the `Packages` method
-
 ## Usage
 ```javascript
 import RNSimpleShare from 'react-native-simple-share';
 ```
 
-##### Use RNSimpleShare simply by calling:
+#### Use RNSimpleShare simply by calling:
 
-    RNSimpleShare.showWithOptions({
-      text: "Text you want to share",
-      url: "URL you want to share",
-      imageUrl: "Url of the image you want to share/action",
-      imageBase64: "Raw base64 encoded image data"
-      image: "Name of the image in the app bundle",
-      file: "Path to file you want to share",
-      anchor: React.findNodeHandle(this.refs.share), // Where you want the share popup to point to on iPad
+    RNSimpleShare.share({
+      title: 'This is my title',
+      description: 'This is my description',
+      url: 'http://google.com',
+      imageUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+      imageBase64: 'Raw base64 encoded image data'
+      image: 'Name of the image in the app bundle',
+      file: 'Path to file you want to share',
+      subject: 'This is my subject for email', 
+      excludedActivityTypes: ['postToTwitter', 'print'];
+      anchor: React.findNodeHandle(this.refs.share), // iPad only
     });
 
 ##### Note:
 - Only provide one image type to the options argument. If multiple image types are provided, image will be used.
-- anchor is optional and only applicable for iPad. Popup will be centered by default if anchor is not provided.
+- Anchor is optional and only applicable for iPad. Popup will be centered by default if anchor is not provided.
+- If you decide to add a subject, it will be used; however if you don't, RNSimpleShare will seek out your app name and use that as the subject.
 
+#### ExcludedActivityTypes params
+```javascript
+  'postToFacebook'
+  'postToTwitter'
+  'postToFlickr'   
+  'postToVimeo'     
+  'postToTencentWeibo' 
+  'postToWeibo'        
+  'postToPinterest'
+  'message' 
+  'airDrop'
+  'mail'             
+  'assignToContact'  
+  'saveToCameraRoll'  
+  'addToReadingList'
+  'print'           
+  'copyToPasteboard'
+  'openInIBooks'
+```
+
+Note: `postToPinterest` is a custom one that is created in the implementation file
 
 ## License
 
-MIT
+#### MIT License (MIT)
+
+Copyright (c) 2017 Jason Noah Choi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
