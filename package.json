@@ -5,6 +5,7 @@
   "description": "Simple iOS share UIActivityViewController for React Native",
   "main": "SimpleShare",
   "scripts": {
+    "start": "node_modules/react-native/packager/packager.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
 
@@ -34,10 +35,5 @@
   ],
   "author": "Jason Noah Choi <jasonnoahchoi@gmail.com> (https://github.com/jasonnoahchoi)",
   "license": "MIT",
-  "homepage": "https://github.com/jasonnoahchoi/react-native-simple-share",
-  "peerDependencies": {
-    "react-native": "^0.41.2",
-    "react-native-windows": "0.41.0-rc.1"
-
-  }
+  "homepage": "https://github.com/jasonnoahchoi/react-native-simple-share"
 }
