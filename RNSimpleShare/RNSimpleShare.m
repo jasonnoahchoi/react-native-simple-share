@@ -6,6 +6,14 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTImageLoader.h>
 
+static UIActivityType const UIActivityTypePostToPinterest = @"pinterest.ShareExtension";
+
+@interface RNSimpleShare() <UIActivityItemSource>
+
+@property (nonatomic, strong) NSDictionary *options;
+
+@end
+
 @implementation RNSimpleShare
 
 RCT_EXPORT_MODULE()
@@ -49,7 +57,7 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     }
     
     if (!imageUrl) {
-        return [self showWithMoreOptions:options image:shareableImage failureCallback:^(NSError *error) {
+        return [self showWithOptions:options image:shareableImage failureCallback:^(NSError *error) {
             failureCallback(error);
         } successCallback:^(NSArray *response) {
             successCallback(response);
@@ -59,35 +67,31 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     __weak RNSimpleShare *weakSelf = self;
     
     [self.bridge.imageLoader loadImageWithURLRequest: [RCTConvert NSURLRequest: imageUrl]
-        callback:^(NSError *error, UIImage *image) {
-            if (!error) {
-                dispatch_async([weakSelf methodQueue], ^{
-                    [weakSelf showWithMoreOptions:options image:image failureCallback:^(NSError *error) {
-                        failureCallback(error);
-                    } successCallback:^(NSArray *response) {
-                        successCallback(response);
-                    }];
-                });
-            } else {
-                RCTLogWarn(@"Could not fetch image.");
-                failureCallback(error);
-            }
+                                            callback:^(NSError *error, UIImage *image) {
+        if (error) {
+            RCTLogWarn(@"Could not fetch image.");
+            failureCallback(error);
+        } else {
+            dispatch_async([weakSelf methodQueue], ^{
+                [weakSelf showWithOptions:options image:image failureCallback:^(NSError *error) {
+                    failureCallback(error);
+                } successCallback:^(NSArray *response) {
+                    successCallback(response);
+                }];
+            });
         }
-     ];
+    }];
 }
 
-- (void)showWithMoreOptions:(NSDictionary *)options image:(UIImage *)image failureCallback:(RCTResponseErrorBlock)failureCallback successCallback:(RCTResponseSenderBlock)successCallback
+- (void)showWithOptions:(NSDictionary *)options image:(UIImage *)image failureCallback:(RCTResponseErrorBlock)failureCallback successCallback:(RCTResponseSenderBlock)successCallback
 {
+    self.options = options;
+    
     NSArray *items = [self checkForItemsWithOptions:options image:image];
     
     UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
     
-    NSString *subject = [RCTConvert NSString:options[@"subject"]];
-    if (subject) {
-        [shareController setValue:subject forKey:@"subject"];
-    }
-    
-    NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options[@"excludedActivityTypes"]];
+    NSArray *excludedActivityTypes = [self excludedActivityTypes:options[@"excludedActivityTypes"]];
     if (excludedActivityTypes) {
         shareController.excludedActivityTypes = excludedActivityTypes;
     }
@@ -96,7 +100,7 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     UIViewController *controller = RCTPresentedViewController();
     shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
         if (activityError) {
-            failureCallback(@[activityError, RCTNullIfNil(activityType)]);
+            failureCallback(activityError);
         } else {
             successCallback(@[@(completed), RCTNullIfNil(activityType)]);
         }
@@ -117,31 +121,42 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
 
 - (NSArray *)checkForItemsWithOptions:(NSDictionary *)options image:(UIImage *)image {
     NSMutableArray *items = [NSMutableArray array];
-    NSString *text = options[@"text"];
-    NSURL *url = options[@"url"];
+    NSString *title = [RCTConvert NSString:options[@"title"]];
+    NSString *description = [RCTConvert NSString:options[@"description"]];
+    NSURL *url =  [RCTConvert NSURL:options[@"url"]];
     NSObject *file = options[@"file"];
     
-    // Return if no args were passed
-    if (!text && !url && !image && !file) {
+    // Return if no options were passed
+    if (!title && !description && !url && !image && !file) {
         RCTLogError(@"You must specify a text, url, image, imageBase64 and/or imageUrl.");
         return items;
     }
     
-    if (text) {
-        [items addObject:text];
+    [items addObject:self];
+    
+    if (image) {
+        [items addObject:image];
     }
     
     if (url) {
         [items addObject:url];
     }
     
-    if (image) {
-        [items addObject:image];
+    // Creates a title & description string so that this can be used as the title for sharing;
+    // otherwise use just title or description
+    if (title && description) {
+        NSString *titleWithDescription = [NSString stringWithFormat:@"%@: %@", title, description];
+        [items addObject:titleWithDescription];
+    } else if (title) {
+        [items addObject:title];
+    } else if (description) {
+        [items addObject:description];
     }
     
     if (file) {
         [items addObject:file];
     }
+    
     return items;
 }
 
@@ -155,5 +170,85 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     }
 }
 
-@end
+- (NSArray *)excludedActivityTypes:(NSArray *)activityTypes {
+    NSDictionary *activityTypesMap = [self activityTypes];
+    
+    NSMutableArray *excludedActivityTypes = [NSMutableArray new];
+    
+    [activityTypes enumerateObjectsUsingBlock:^(NSString *activityTypeKey, NSUInteger idx, BOOL *stop) {
+        NSString *activityType = [activityTypesMap objectForKey:activityTypeKey];
+        if (!activityType) {
+            RCTLogWarn(@"activityTypeKey not found: %@. Try one of these: %@", activityTypeKey, [activityTypesMap allKeys]);
+            return;
+        }
+        [excludedActivityTypes addObject:activityType];
+    }];
+    
+    return [RCTConvert NSStringArray:excludedActivityTypes];
+}
 
+- (NSDictionary *)activityTypes {
+    return @{
+             @"postToFacebook"     : UIActivityTypePostToFacebook,
+             @"postToTwitter"      : UIActivityTypePostToTwitter,
+             @"postToFlickr"       : UIActivityTypePostToFlickr,
+             @"postToVimeo"        : UIActivityTypePostToVimeo,
+             @"postToTencentWeibo" : UIActivityTypePostToTencentWeibo,
+             @"postToWeibo"        : UIActivityTypePostToWeibo,
+             @"postToPinterest"    : UIActivityTypePostToPinterest,
+             @"message"            : UIActivityTypeMessage,
+             @"airDrop"            : UIActivityTypeAirDrop,
+             @"mail"               : UIActivityTypeMail,
+             @"assignToContact"    : UIActivityTypeAssignToContact,
+             @"saveToCameraRoll"   : UIActivityTypeSaveToCameraRoll,
+             @"addToReadingList"   : UIActivityTypeAddToReadingList,
+             @"print"              : UIActivityTypePrint,
+             @"copyToPasteboard"   : UIActivityTypeCopyToPasteboard
+             };
+}
+
+//MARK: - UIActivity Item Source
+
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController {
+    return @"";
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(UIActivityType)activityType {
+    if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
+        [self itemsForActivityType];
+    } else if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
+        [self itemsForActivityType];
+    } else if ([activityType isEqualToString:UIActivityTypePostToPinterest]) {
+        [self itemsForActivityType];
+    } else {
+        [self itemsForActivityType];
+    }
+    
+    return @[];
+}
+
+- (id)itemsForActivityType {
+    NSString *title = self.options[@"title"];
+    NSString *description = self.options[@"description"];
+    if (title && description) {
+        return @[@"%@ - %@", title, description];
+    } else if (title) {
+        return title;
+    } else {
+        return description;
+    }
+    return @[];
+}
+
+/// if a subject exists in the options dictionary, use it,
+/// otherwise use the bundle app name
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController subjectForActivityType:(NSString *)activityType {
+    NSString *subject = [RCTConvert NSString:self.options[@"subject"]];
+    if (subject) {
+        return subject;
+    } else {
+        return [[[NSBundle mainBundle] infoDictionary] objectForKey:kCFBundleNameKey];
+    }
+}
+
+@end
