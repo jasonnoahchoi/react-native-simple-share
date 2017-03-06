@@ -1,7 +1,7 @@
 
 {
   "name": "react-native-simple-share",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Simple iOS share UIActivityViewController for React Native",
   "main": "index.ios.js",
   "scripts": {
