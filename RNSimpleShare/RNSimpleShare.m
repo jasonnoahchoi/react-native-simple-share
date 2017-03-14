@@ -144,12 +144,12 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     
     // Creates a title & description string so that this can be used as the title for sharing;
     // otherwise use just title or description
-    if (!title.length  && !description.length) {
+    if (title.length  && description.length) {
         NSString *titleWithDescription = [NSString stringWithFormat:@"%@: %@", title, description];
         [items addObject:titleWithDescription];
-    } else if (!title.length) {
+    } else if (title.length) {
         [items addObject:title];
-    } else if (!description.length) {
+    } else if (description.length) {
         [items addObject:description];
     }
 
