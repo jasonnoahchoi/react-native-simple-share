@@ -41,6 +41,7 @@ import RNSimpleShare from 'react-native-simple-share';
     RNSimpleShare.share({
       title: 'This is my title',
       description: 'This is my description',
+      message: 'This is my message',
       url: 'http://google.com',
       imageUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       imageBase64: 'Raw base64 encoded image data'

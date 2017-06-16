@@ -121,6 +121,7 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
 
 - (NSArray *)checkForItemsWithOptions:(NSDictionary *)options image:(UIImage *)image {
     NSMutableArray *items = [NSMutableArray array];
+    NSString *message = [RCTConvert NSString:options[@"message"]];
     NSString *title = [RCTConvert NSString:options[@"title"]];
     NSString *description = [RCTConvert NSString:options[@"description"]];
     NSURL *url =  [RCTConvert NSURL:options[@"url"]];
@@ -134,6 +135,10 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
     
     [items addObject:self];
     
+    if (message) {
+        [items addObject:message];
+    }
+
     if (image) {
         [items addObject:image];
     }
