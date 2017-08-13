@@ -121,8 +121,8 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
 
 - (NSArray *)checkForItemsWithOptions:(NSDictionary *)options image:(UIImage *)image {
     NSMutableArray *items = [NSMutableArray array];
-    NSString *title = [RCTConvert NSString:options[@"title"]];
-    NSString *description = [RCTConvert NSString:options[@"description"]];
+    NSString *title = options[@"title"];
+    NSString *description = options[@"description"];
     NSURL *url =  [RCTConvert NSURL:options[@"url"]];
     NSObject *file = options[@"file"];
     
@@ -142,17 +142,14 @@ RCT_EXPORT_METHOD(share:(NSDictionary *)options
         [items addObject:url];
     }
     
-    // Creates a title & description string so that this can be used as the title for sharing;
-    // otherwise use just title or description
-    if (title.length  && description.length) {
-        NSString *titleWithDescription = [NSString stringWithFormat:@"%@: %@", title, description];
-        [items addObject:titleWithDescription];
-    } else if (title.length) {
+    if (![title isKindOfClass:[NSNull class]] || title.length) {
         [items addObject:title];
-    } else if (description.length) {
+    }
+    
+    if (![description isKindOfClass:[NSNull class]] && description.length) {
         [items addObject:description];
     }
-
+    
     if (file) {
         [items addObject:file];
     }
