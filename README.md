@@ -43,11 +43,11 @@ import RNSimpleShare from 'react-native-simple-share';
         description: 'This is my description',
         url: 'http://google.com',
         imageUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-        imageBase64: 'Raw base64 encoded image data'
+        imageBase64: 'Raw base64 encoded image data',
         image: 'Name of the image in the app bundle',
         file: 'Path to file you want to share',
         subject: 'This is my subject for email', 
-        excludedActivityTypes: ['postToTwitter', 'print'];
+        excludedActivityTypes: ['postToTwitter', 'print'],
         anchor: React.findNodeHandle(this.refs.share), // iPad only
       },
       function (error) {
