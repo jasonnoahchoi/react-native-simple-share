@@ -37,19 +37,32 @@ import RNSimpleShare from 'react-native-simple-share';
 ```
 
 #### Use RNSimpleShare simply by calling:
-
-    RNSimpleShare.share({
-      title: 'This is my title',
-      description: 'This is my description',
-      url: 'http://google.com',
-      imageUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-      imageBase64: 'Raw base64 encoded image data'
-      image: 'Name of the image in the app bundle',
-      file: 'Path to file you want to share',
-      subject: 'This is my subject for email', 
-      excludedActivityTypes: ['postToTwitter', 'print'];
-      anchor: React.findNodeHandle(this.refs.share), // iPad only
+    return new Promise(function (resolve, reject) {
+      RNSimpleShare.share({
+        title: 'This is my title',
+        description: 'This is my description',
+        url: 'http://google.com',
+        imageUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+        imageBase64: 'Raw base64 encoded image data'
+        image: 'Name of the image in the app bundle',
+        file: 'Path to file you want to share',
+        subject: 'This is my subject for email', 
+        excludedActivityTypes: ['postToTwitter', 'print'];
+        anchor: React.findNodeHandle(this.refs.share), // iPad only
+      },
+      function (error) {
+        reject(error);
+      },
+      function (success, method) {
+        resolve({success, method});
+        if (!success) {
+          // send failure message
+        } else {
+          // send success message
+        }
+      });
     });
+      
 
 ##### Note:
 - Only provide one image type to the options argument. If multiple image types are provided, image will be used.
